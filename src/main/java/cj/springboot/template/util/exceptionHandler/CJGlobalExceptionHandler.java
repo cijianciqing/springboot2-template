@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Slf4j
 /*暂时禁用此功能，便于开发调试*/
-//@Profile("pro")
+@Profile("pro")
 @ControllerAdvice
 public class CJGlobalExceptionHandler {
 //

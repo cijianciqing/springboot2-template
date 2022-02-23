@@ -7,4 +7,13 @@ spring:
   profiles:
     active: dev
 
-
+  ####################################
+  #        spring通用配置1            #
+  ####################################
+  application:
+    #    设置此应用的名称
+    name: template
+  #控制台输出设置
+  output:
+    ansi:
+      enabled: always

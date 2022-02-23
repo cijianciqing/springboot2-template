@@ -25,18 +25,8 @@ server:
 
 
 
-# 数据源配置
 spring:
-####################################
-#        spring通用配置1            #
-####################################
-  application:
-    #    设置此应用的名称
-    name: template
-  #控制台输出设置
-  output:
-    ansi:
-      enabled: always
+
 ####################################
 #            session配置           #
 ####################################
@@ -164,5 +154,5 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   # 是否需要配置，不配置好像也可以
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: cj.springboot.redismybatis.entity
+#  type-aliases-package: cj.springboot.redismybatis.entity
 
