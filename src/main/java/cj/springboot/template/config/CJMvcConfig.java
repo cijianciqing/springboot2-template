@@ -1,14 +1,15 @@
 package cj.springboot.template.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @Configuration
-@EnableWebMvc
-@EnableScheduling
+@EnableWebMvc//接管web mvc的配置
+//@EnableScheduling
 public class CJMvcConfig implements WebMvcConfigurer {
 
 	//不通过controller,直接跳转
@@ -56,20 +57,50 @@ public class CJMvcConfig implements WebMvcConfigurer {
 
 
 	/*
-	 * 全局CORS配置
-	 *
-	 * 暂时禁用
-	 * */
-/*	@Override
-	public void addCorsMappings(CorsRegistry registry) {
-		registry.addMapping("/**")
-				.allowedOriginPatterns("*")
-				.allowedHeaders(CorsConfiguration.ALL)
-				.allowedMethods(CorsConfiguration.ALL)
-				.allowCredentials(true)
-				.maxAge(3600); // 1小时内不需要再预检（发OPTIONS请求）
-	}*/
+	* 全局CORS配置
+	*
+	* 但是问题是，当你在项目中使用了该方法配置跨域问题后，再使用自定义的拦截器时，跨域问题的相关配置就会失效，请求依然会报跨域问题的错。
+	原因是客户端请求经过的先后顺序问题，当服务端接收到一个请求时，该请求会先经过过滤器，然后进入拦截器中，
+	* 然后再进入Mapping映射中的路径所指向的资源，所以跨域配置在mapping上并不起作用，返回的头信息中并没有配置的跨域信息，浏览器就会报跨域异常。
+	* */
+//	@Override
+//	public void addCorsMappings(CorsRegistry registry) {
+//		registry.addMapping("/**")
+//				.allowedOriginPatterns("*")
+//				.allowedHeaders(CorsConfiguration.ALL)
+//				.allowedMethods(CorsConfiguration.ALL)
+//				.allowCredentials(true)
+//				.maxAge(3600); // 1小时内不需要再预检（发OPTIONS请求）
+//
+//	}
 
+	/*
+	* 为了避免后端long类型【有的long有16为多。。。】传递到前端时，由于格式问题导致显示不正常
+	* 进行全局配置
+	*
+	* 这种方式暂时禁用，因为会导致不长的long也会转换为String
+	* 在需要转化的字段上添加： @JsonSerialize(using= ToStringSerializer.class)
+	* */
+//	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+//		MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		/**
+//		 * 序列换成json时,将所有的long变成string
+//		 * 因为js中得数字类型不能包含所有的java long值
+//		 */
+//		SimpleModule simpleModule = new SimpleModule();
+//		simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
+//		simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
+//		simpleModule.addSerializer(BigInteger.class, ToStringSerializer.instance);
+//
+//		// 反序列化时忽略多余字段
+//		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//
+//		// 注册
+//		objectMapper.registerModule(simpleModule);
+//		jackson2HttpMessageConverter.setObjectMapper(objectMapper);
+//		converters.add(jackson2HttpMessageConverter);
+//	}
 
 
 }
