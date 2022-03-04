@@ -1,5 +1,7 @@
 package cj.springboot.template.config;
 
+import cj.springboot.template.config.async.CJDeferredResultProcessInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -14,8 +16,11 @@ import javax.annotation.Resource;
 public class CJMvcConfig implements WebMvcConfigurer {
 
 
-	@Resource
+	@Autowired
 	private ThreadPoolTaskExecutor applicationTaskExecutor;
+
+	@Autowired
+	CJDeferredResultProcessInterceptor cjDeferredResultProcessInterceptor;
 
 	//不通过controller,直接跳转
 	@Override
@@ -66,12 +71,20 @@ public class CJMvcConfig implements WebMvcConfigurer {
 	* */
 	@Override
 	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-		//处理 callable超时
-		configurer.setDefaultTimeout(60*1000);
+		//设置异步请求超时时间 milliseconds
+		configurer.setDefaultTimeout(6*1000);
 		/*
 		* 处理{@link Callable} controller method
 		 * */
 		configurer.setTaskExecutor(applicationTaskExecutor);
+		/*
+		*使用并发请求的回调配置生命周期拦截器
+		* 当一个Controller返回DeferredResult时适用
+		* */
+		configurer.registerDeferredResultInterceptors(cjDeferredResultProcessInterceptor);
+		/*
+		* 用于Controller返回Callable的全局配置
+		* */
 //		configurer.registerCallableInterceptors(timeoutCallableProcessingInterceptor());
 	}
 

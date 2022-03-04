@@ -24,3 +24,4 @@ spring:
         max-size: 16
         queue-capacity: 100
         keep-alive: "10s"
+
