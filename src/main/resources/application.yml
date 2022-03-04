@@ -17,3 +17,10 @@ spring:
   output:
     ansi:
       enabled: always
+
+  task:
+    execution:
+      pool:
+        max-size: 16
+        queue-capacity: 100
+        keep-alive: "10s"

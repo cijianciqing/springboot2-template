@@ -1,16 +1,21 @@
 package cj.springboot.template.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.servlet.config.annotation.*;
+
+import javax.annotation.Resource;
 
 
 @Configuration
 @EnableWebMvc//接管web mvc的配置
 //@EnableScheduling
 public class CJMvcConfig implements WebMvcConfigurer {
+
+
+	@Resource
+	private ThreadPoolTaskExecutor applicationTaskExecutor;
 
 	//不通过controller,直接跳转
 	@Override
@@ -55,6 +60,20 @@ public class CJMvcConfig implements WebMvcConfigurer {
 
 	}
 
+	/*
+	*配置异步请求处理选项
+	* 处理Callable请求
+	* */
+	@Override
+	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+		//处理 callable超时
+		configurer.setDefaultTimeout(60*1000);
+		/*
+		* 处理{@link Callable} controller method
+		 * */
+		configurer.setTaskExecutor(applicationTaskExecutor);
+//		configurer.registerCallableInterceptors(timeoutCallableProcessingInterceptor());
+	}
 
 	/*
 	* 全局CORS配置
